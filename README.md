@@ -138,9 +138,7 @@ core/
 ├── urls/
 │ └── api_urls.py
 
-markdown
-Copiar
-Editar
+
 
 ---
 
