@@ -119,24 +119,24 @@ Implementar arquitectura MVC adaptada a Django + APIs REST para React.
 ## **Estructura de carpetas propuesta**
 core/
 ├── models/
-│ ├── patient.py
-│ └── diagnosis.py
+│   ├── patient.py
+│   └── diagnosis.py
 ├── serializers/
-│ ├── patient_serializer.py
-│ └── diagnosis_serializer.py
+│   ├── patient_serializer.py
+│   └── diagnosis_serializer.py
 ├── views/
-│ ├── patient_view.py
-│ └── diagnosis_view.py
+│   ├── patient_view.py
+│   └── diagnosis_view.py
 ├── services/
-│ └── patient_service.py
+│   └── patient_service.py
 ├── validators/
-│ ├── search_patients_validator.py
-│ ├── store_patient_validator.py
-│ └── update_patient_validator.py
+│   ├── search_patients_validator.py
+│   ├── store_patient_validator.py
+│   └── update_patient_validator.py
 ├── pagination/
-│ └── custom_pagination.py
+│   └── custom_pagination.py
 ├── urls/
-│ └── api_urls.py
+│   └── api_urls.py
 
 
 
