@@ -154,6 +154,9 @@ core/
 ### **Diagnósticos**
 - **GET** `/api/diagnoses/` → Listar todos los diagnósticos.
 - **POST** `/api/diagnoses/` → Registrar nuevo diagnóstico.
+- **PUT** `/api/diagnoses/{id}/` → Actualizar información de diagnostico.
+- **DELETE** `/api/diagnoses/{id}/` → Eliminar diagnostico.
+- **GET** `/api/diagnoses/search/` → Búsqueda avanzada con filtros.
 
 ---
 
@@ -176,11 +179,26 @@ core/
 - Soft Deletes (manual).
 
 ---
+## **Instalacion y Uso
+Sigue estos pasos para levantar el proyecto en tu entorno local.
+
+### 1️⃣ Clonar el repositorio
+git clone https://github.com/usuario/tu-proyecto.git
+cd tu-proyecto
+## **Crear entorno Virtual
+python -m venv venv
+venv\Scripts\activate
+## **Instalar Dependencias necesarias
+pip install -r requirements.txt
+
+## **Levantar Servidor
+python manage.py runserver
 
 ## **Entregables Esperados**
 - CRUD completo de pacientes funcional y documentado.
 - Sistema de diagnóstico médico implementado.
 - Búsqueda avanzada por múltiples criterios.
 - Validaciones robustas integradas.
+
 - Rutas y APIs bien documentadas.
 - Tests unitarios e integración.
