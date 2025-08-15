@@ -94,7 +94,7 @@ class PatientSerializer(serializers.ModelSerializer):
         if not value.isdigit():
           raise serializers.ValidationError("El número de documento debe contener solo números.")
     
-          qs = Patient.objects.filter(document_number=value)
+        qs = Patient.objects.filter(document_number=value)
         if self.instance:
           qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
