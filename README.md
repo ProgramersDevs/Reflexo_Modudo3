@@ -184,6 +184,7 @@ Sigue estos pasos para levantar el proyecto en tu entorno local.
 
 ### 1️⃣ Clonar el repositorio
 git clone "Colocar el link del repositorio"
+
 cd tu-proyecto
 ## **Crear entorno Virtual
 python -m venv venv
