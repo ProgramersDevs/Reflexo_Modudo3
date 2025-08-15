@@ -119,26 +119,25 @@ Implementar arquitectura MVC adaptada a Django + APIs REST para React.
 Estructura de carpetas propuesta
 
 core/
-├── models/
-│   ├── patient.py
-│   └── diagnosis.py
-├── serializers/
-│   ├── patient_serializer.py
-│   └── diagnosis_serializer.py
-├── views/
-│   ├── patient_view.py
-│   └── diagnosis_view.py
-├── services/
-│   └── patient_service.py
-├── validators/
-│   ├── search_patients_validator.py
-│   ├── store_patient_validator.py
-│   └── update_patient_validator.py
-├── pagination/
-│   └── custom_pagination.py
-├── urls/
-│   └── api_urls.py
-
+├── models/                              # Modelos de base de datos
+│   ├── patient.py                       # Modelo de Paciente
+│   └── diagnosis.py                     # Modelo de Diagnóstico
+├── serializers/                         # Serializadores (equivalentes a recursos y colecciones)
+│   ├── patient_serializer.py            # Transforma pacientes para la API (PatientResource)
+│   └── diagnosis_serializer.py          # Transforma diagnósticos para la API
+├── views/                               # Vistas API tipo ViewSet (equivalentes a controladores Laravel)
+│   ├── patient_view.py                  # Gestión de endpoints de pacientes
+│   └── diagnosis_view.py                # Gestión de endpoints de diagnósticos
+├── services/                            # Lógica de negocio desacoplada (como servicios Laravel)
+│   └── patient_service.py               # Lógica avanzada para búsquedas y filtrados
+├── validators/                          # Validaciones de entrada personalizadas (como Form Requests)
+│   ├── search_patients_validator.py     # Validaciones para búsquedas
+│   ├── store_patient_validator.py       # Validaciones para registro de pacientes
+│   └── update_patient_validator.py      # Validaciones para edición de pacientes
+├── pagination/                          # Configuraciones de paginación para colecciones de la API
+│   └── custom_pagination.py             # Equivalente a PatientCollection
+├── urls/                                # Definición de rutas del API
+│   └── api_urls.py                      # Enrutamiento para pacientes y diagnósticos
 
 
 ---
