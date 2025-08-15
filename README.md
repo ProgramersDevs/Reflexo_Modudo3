@@ -116,7 +116,8 @@ Implementar arquitectura MVC adaptada a Django + APIs REST para React.
 
 ---
 
-## **Estructura de carpetas propuesta**
+Estructura de carpetas propuesta
+
 core/
 ├── models/
 │   ├── patient.py
