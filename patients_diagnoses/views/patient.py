@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
-from .models import Patient
-from .serializers import PatientSerializer
+from ..models.patient import Patient
+from ..serializers.patient import PatientSerializer
 from rest_framework.generics import ListAPIView
 import unicodedata
 

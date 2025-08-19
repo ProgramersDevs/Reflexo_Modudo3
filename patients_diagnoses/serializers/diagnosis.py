@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Diagnosis
+from ..models.diagnosis import Diagnosis
 import re
 
 class DiagnosisSerializer(serializers.ModelSerializer):

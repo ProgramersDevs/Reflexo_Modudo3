@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Patient,Region, Province, District, Country, DocumentType
+from ..models.patient import Patient,Region, Province, District, Country, DocumentType
 from django.core.validators import RegexValidator
 from datetime import date
 
