@@ -7,6 +7,7 @@ from ..models.patient import Patient
 from ..serializers.patient import PatientSerializer
 from rest_framework.generics import ListAPIView
 import unicodedata
+from ..services.patient_service import PatientService
 
 # ✅ Paso 1 y 2: función para eliminar tildes
 def remove_accents(text):
@@ -15,18 +16,36 @@ def remove_accents(text):
         if unicodedata.category(c) != 'Mn'
     )
 
+patient_service = PatientService()
+
+
 class PatientListCreateView(APIView):
     def get(self, request):
+        # Paginación opcional: si viene per_page o page, usar servicio de paginación
+        if "per_page" in request.GET or "page" in request.GET:
+            page_obj = patient_service.get_paginated(request)
+            serializer = PatientSerializer(page_obj.object_list, many=True)
+            return Response({
+                "count": page_obj.paginator.count,
+                "num_pages": page_obj.paginator.num_pages,
+                "current_page": page_obj.number,
+                "results": serializer.data,
+            })
         patients = Patient.objects.all()
         serializer = PatientSerializer(patients, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = PatientSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        patient, created, restored = patient_service.store_or_restore(serializer.validated_data)
+        out = PatientSerializer(patient).data
+        if created:
+            return Response(out, status=status.HTTP_201_CREATED)
+        # Sin soft delete en el modelo actual, tratamos como conflicto si ya existe
+        return Response({"message": "El paciente ya existe", "data": out}, status=status.HTTP_409_CONFLICT)
 
 class PatientRetrieveUpdateDeleteView(APIView):
     def get(self, request, pk):
@@ -43,40 +62,29 @@ class PatientRetrieveUpdateDeleteView(APIView):
         except Patient.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = PatientSerializer(patient, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        updated = patient_service.update(patient, serializer.validated_data)
+        return Response(PatientSerializer(updated).data)
 
     def delete(self, request, pk):
         try:
             patient = Patient.objects.get(pk=pk)
         except Patient.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
-        patient.delete()
+        patient_service.destroy(patient)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class PatientSearchView(APIView):
     def get(self, request):
-        query = request.GET.get('q', '').lower()
-        query_normalized = remove_accents(query)
-
-        patients = Patient.objects.all()
-        filtered = []
-
-        for patient in patients:
-            combined_fields = (
-                 f"{patient.name} {patient.paternal_lastname} {patient.maternal_lastname} "
-                 f"{patient.document_number} {patient.personal_reference or ''}"
-            ).lower()
-
-            combined_fields_normalized = remove_accents(combined_fields)
-
-            if query_normalized in combined_fields_normalized:
-                filtered.append(patient)
-
-        serializer = PatientSerializer(filtered, many=True)
-        return Response(serializer.data)
+        page_obj = patient_service.search_patients(request.GET)
+        serializer = PatientSerializer(page_obj.object_list, many=True)
+        return Response({
+            "count": page_obj.paginator.count,
+            "num_pages": page_obj.paginator.num_pages,
+            "current_page": page_obj.number,
+            "results": serializer.data,
+        })
 
 
 # Create your views here.

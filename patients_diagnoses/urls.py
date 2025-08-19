@@ -6,7 +6,7 @@ from .views.patient import ( PatientListCreateView, PatientRetrieveUpdateDeleteV
 
 urlpatterns = [
      path('diagnoses/', DiagnosisListCreateAPIView.as_view(), name='diagnosis-list-create'), 
-     path('diagnoses/int:pk/', DiagnosisRetrieveUpdateDestroyAPIView.as_view(), name='diagnosis-detail'), 
+     path('diagnoses/<int:pk>/', DiagnosisRetrieveUpdateDestroyAPIView.as_view(), name='diagnosis-detail'), 
      path('diagnoses/search/', DiagnosisSearchAPIView.as_view(), name='diagnosis-search'),
      
      path('patients/', PatientListCreateView.as_view(), name='patient-list'),

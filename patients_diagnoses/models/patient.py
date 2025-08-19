@@ -55,4 +55,4 @@ class Patient(models.Model):
    
     def __str__(self):
         return f"{self.name} {self.paternal_lastname}"
-# Create your models here.
+# Create your models here........
