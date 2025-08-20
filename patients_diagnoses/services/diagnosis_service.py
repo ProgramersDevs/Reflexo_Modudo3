@@ -53,7 +53,7 @@ class DiagnosisService:
         serializer = DiagnosisSerializer(data=diagnosis_data)
         if serializer.is_valid():
             diagnosis = serializer.save()
-            return DiagnosisSerializer(diagnosis).data
+            return DiagnosisSerializer(diagnosis).data, None
         return None, serializer.errors
     
     @staticmethod
@@ -64,7 +64,7 @@ class DiagnosisService:
             serializer = DiagnosisSerializer(diagnosis, data=diagnosis_data, partial=True)
             if serializer.is_valid():
                 diagnosis = serializer.save()
-                return DiagnosisSerializer(diagnosis).data
+                return DiagnosisSerializer(diagnosis).data, None
             return None, serializer.errors
         except Diagnosis.DoesNotExist:
             return None, {'error': 'Diagnóstico no encontrado'}
