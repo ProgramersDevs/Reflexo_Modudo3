@@ -1,0 +1,12 @@
+# Django y REST Framework
+Django==5.2.4
+djangorestframework==3.16.0
+django-filter==25.1
+
+# Dependencias del sistema
+asgiref==3.9.1
+sqlparse==0.5.3
+tzdata==2025.2
+
+# Dependencias adicionales para el proyecto
+django-cors-headers==4.3.1
