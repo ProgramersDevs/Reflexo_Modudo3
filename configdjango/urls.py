@@ -19,7 +19,10 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #path('api/reflexo/', include('Reflexo.urls')),
+    #path('api/mi-app/', include('mi_app.urls')),
     path('api/', include('patients_diagnoses.urls')),
+    #path('api/patients-diagnoses/', include('patients_diagnoses.urls')),
 ]
 
 

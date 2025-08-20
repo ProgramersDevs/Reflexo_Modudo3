@@ -7,6 +7,7 @@ from django.db.models.functions import Concat
 from django.db.models import Value
 
 from ..models.patient import Patient
+from ..serializers.patient import PatientSerializer, PatientListSerializer
 
 
 class PatientService:
@@ -19,7 +20,7 @@ class PatientService:
     """
 
     def get_all(self):
-        return Patient.objects.all()
+        return Patient.objects.filter(deleted_at__isnull=True)
 
     def get_paginated(self, request):
         per_page_raw = request.GET.get("per_page", 20)
@@ -33,7 +34,7 @@ class PatientService:
         except (TypeError, ValueError):
             page = 1
 
-        queryset = Patient.objects.all().order_by("-id")
+        queryset = Patient.objects.filter(deleted_at__isnull=True).order_by("-id")
         paginator = Paginator(queryset, per_page)
         try:
             page_obj = paginator.page(page)
@@ -51,7 +52,7 @@ class PatientService:
         except (TypeError, ValueError):
             per_page = 30
 
-        queryset = Patient.objects.all().order_by("-id")
+        queryset = Patient.objects.filter(deleted_at__isnull=True).order_by("-id")
 
         if search_term:
             # Búsqueda multi-campo similar a la de Laravel usando Q y concatenaciones
@@ -119,8 +120,17 @@ class PatientService:
 
     @transaction.atomic
     def destroy(self, patient: Patient) -> None:
-        # Eliminación directa (no hay soft delete en el modelo Patient actual)
-        patient.delete()
+        # Soft delete del paciente
+        patient.soft_delete()
+    
+    def restore(self, patient_id: int) -> bool:
+        """Restaura un paciente eliminado."""
+        try:
+            patient = Patient.objects.get(id=patient_id, deleted_at__isnull=False)
+            patient.restore()
+            return True
+        except Patient.DoesNotExist:
+            return False
 
 
 

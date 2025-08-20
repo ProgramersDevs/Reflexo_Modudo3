@@ -1,32 +1,14 @@
 from rest_framework import serializers
-from ..models.patient import Patient,Region, Province, District, Country, DocumentType
+from ..models.patient import Patient
+from Reflexo.serializers.region_serializer import RegionSerializer
+from Reflexo.serializers.province_serializer import ProvinceSerializer
+from Reflexo.serializers.district_serializer import DistrictSerializer
+from Reflexo.serializers.country_serializer import CountrySerializer
+from mi_app.serializers.document_type import DocumentTypeSerializer
 from django.core.validators import RegexValidator
 from datetime import date
 
-class RegionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Region
-        fields = ['id', 'name']
 
-class ProvinceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Province
-        fields = ['id', 'name']
-
-class DistrictSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = District
-        fields = ['id', 'name']
-
-class CountrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Country
-        fields = ['id', 'name']
-
-class DocumentTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DocumentType
-        fields = ['id', 'name']
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -37,11 +19,11 @@ class PatientSerializer(serializers.ModelSerializer):
     document_type = DocumentTypeSerializer(read_only=True)
 
     # Para escritura (crear con IDs)
-    region_id = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), source='region', write_only=True)
-    province_id = serializers.PrimaryKeyRelatedField(queryset=Province.objects.all(), source='province', write_only=True)
-    district_id = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), source='district', write_only=True)
-    country_id = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), source='country', write_only=True)
-    document_type_id = serializers.PrimaryKeyRelatedField(queryset=DocumentType.objects.all(), source='document_type', write_only=True)
+    region_id = serializers.PrimaryKeyRelatedField(queryset=RegionSerializer.Meta.model.objects.all(), source='region', write_only=True)
+    province_id = serializers.PrimaryKeyRelatedField(queryset=ProvinceSerializer.Meta.model.objects.all(), source='province', write_only=True)
+    district_id = serializers.PrimaryKeyRelatedField(queryset=DistrictSerializer.Meta.model.objects.all(), source='district', write_only=True)
+    country_id = serializers.PrimaryKeyRelatedField(queryset=CountrySerializer.Meta.model.objects.all(), source='country', write_only=True)
+    document_type_id = serializers.PrimaryKeyRelatedField(queryset=DocumentTypeSerializer.Meta.model.objects.all(), source='document_type', write_only=True)
 
     # Validaciones campo por campo
     document_number = serializers.CharField(
@@ -133,5 +115,28 @@ class PatientSerializer(serializers.ModelSerializer):
         if len(value) < 6:
             raise serializers.ValidationError("El teléfono principal debe tener al menos 6 caracteres.")
         return value
+
+
+class PatientListSerializer(serializers.ModelSerializer):
+    """Serializer simplificado para listar pacientes."""
     
+    full_name = serializers.SerializerMethodField()
+    age = serializers.SerializerMethodField()
+    region_name = serializers.CharField(source='region.name', read_only=True)
+    document_type_name = serializers.CharField(source='document_type.name', read_only=True)
     
+    class Meta:
+        model = Patient
+        fields = [
+            'id', 'document_number', 'full_name', 'age', 'sex',
+            'primary_phone', 'email', 'region_name', 'document_type_name',
+            'created_at'
+        ]
+    
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+    
+    def get_age(self, obj):
+        from datetime import date
+        today = date.today()
+        return today.year - obj.birth_date.year - ((today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))

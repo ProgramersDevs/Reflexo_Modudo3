@@ -1,20 +1,10 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
 from ..models.patient import Patient
-from ..serializers.patient import PatientSerializer
-from rest_framework.generics import ListAPIView
-import unicodedata
+from ..serializers.patient import PatientSerializer, PatientListSerializer
 from ..services.patient_service import PatientService
-
-# ✅ Paso 1 y 2: función para eliminar tildes
-def remove_accents(text):
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', text)
-        if unicodedata.category(c) != 'Mn'
-    )
 
 patient_service = PatientService()
 
@@ -31,8 +21,8 @@ class PatientListCreateView(APIView):
                 "current_page": page_obj.number,
                 "results": serializer.data,
             })
-        patients = Patient.objects.all()
-        serializer = PatientSerializer(patients, many=True)
+        patients = Patient.objects.filter(deleted_at__isnull=True)
+        serializer = PatientListSerializer(patients, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -50,7 +40,7 @@ class PatientListCreateView(APIView):
 class PatientRetrieveUpdateDeleteView(APIView):
     def get(self, request, pk):
         try:
-            patient = Patient.objects.get(pk=pk)
+            patient = Patient.objects.get(pk=pk, deleted_at__isnull=True)
         except Patient.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = PatientSerializer(patient)
@@ -58,7 +48,7 @@ class PatientRetrieveUpdateDeleteView(APIView):
     
     def put(self, request, pk):
         try:
-            patient = Patient.objects.get(pk=pk)
+            patient = Patient.objects.get(pk=pk, deleted_at__isnull=True)
         except Patient.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = PatientSerializer(patient, data=request.data)
@@ -69,7 +59,7 @@ class PatientRetrieveUpdateDeleteView(APIView):
 
     def delete(self, request, pk):
         try:
-            patient = Patient.objects.get(pk=pk)
+            patient = Patient.objects.get(pk=pk, deleted_at__isnull=True)
         except Patient.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
         patient_service.destroy(patient)
