@@ -66,6 +66,110 @@ class PatientSerializer(serializers.ModelSerializer):
             'country_id',
             'document_type_id',
         ]
+        # Mensajes de error personalizados en español
+        extra_kwargs = {
+            'document_number': {
+                'error_messages': {
+                    'required': 'El número de documento es obligatorio.',
+                    'max_length': 'El número de documento no debe exceder los 20 caracteres.',
+                    'blank': 'El número de documento no puede estar vacío.'
+                }
+            },
+            'paternal_lastname': {
+                'error_messages': {
+                    'required': 'El apellido paterno es obligatorio.',
+                    'max_length': 'El apellido paterno no debe exceder los 100 caracteres.',
+                    'blank': 'El apellido paterno no puede estar vacío.'
+                }
+            },
+            'maternal_lastname': {
+                'error_messages': {
+                    'required': 'El apellido materno es obligatorio.',
+                    'max_length': 'El apellido materno no debe exceder los 100 caracteres.',
+                    'blank': 'El apellido materno no puede estar vacío.'
+                }
+            },
+            'name': {
+                'error_messages': {
+                    'required': 'El nombre es obligatorio.',
+                    'max_length': 'El nombre no debe exceder los 100 caracteres.',
+                    'blank': 'El nombre no puede estar vacío.'
+                }
+            },
+            'birth_date': {
+                'error_messages': {
+                    'required': 'La fecha de nacimiento es obligatoria.',
+                    'invalid': 'La fecha de nacimiento debe tener un formato válido (YYYY-MM-DD).'
+                }
+            },
+            'sex': {
+                'error_messages': {
+                    'required': 'El sexo es obligatorio.',
+                    'invalid_choice': 'Seleccione una opción válida. Las opciones son Masculino o Femenino.'
+                }
+            },
+            'primary_phone': {
+                'error_messages': {
+                    'required': 'El teléfono principal es obligatorio.',
+                    'max_length': 'El teléfono principal no debe exceder los 15 caracteres.',
+                    'blank': 'El teléfono principal no puede estar vacío.'
+                }
+            },
+            'secondary_phone': {
+                'error_messages': {
+                    'max_length': 'El teléfono secundario no debe exceder los 15 caracteres.'
+                }
+            },
+            'email': {
+                'error_messages': {
+                    'required': 'El correo electrónico es obligatorio.',
+                    'invalid': 'Ingrese un correo electrónico válido.',
+                    'blank': 'El correo electrónico no puede estar vacío.'
+                }
+            },
+            'address': {
+                'error_messages': {
+                    'required': 'La dirección es obligatoria.',
+                    'max_length': 'La dirección no debe exceder los 255 caracteres.',
+                    'blank': 'La dirección no puede estar vacía.'
+                }
+            },
+            'region_id': {
+                'error_messages': {
+                    'required': 'La región es obligatoria.',
+                    'does_not_exist': 'La región seleccionada no existe.',
+                    'null': 'Debe seleccionar una región.'
+                }
+            },
+            'province_id': {
+                'error_messages': {
+                    'required': 'La provincia es obligatoria.',
+                    'does_not_exist': 'La provincia seleccionada no existe.',
+                    'null': 'Debe seleccionar una provincia.'
+                }
+            },
+            'district_id': {
+                'error_messages': {
+                    'required': 'El distrito es obligatorio.',
+                    'does_not_exist': 'El distrito seleccionado no existe.',
+                    'null': 'Debe seleccionar un distrito.'
+                }
+            },
+            'country_id': {
+                'error_messages': {
+                    'required': 'El país es obligatorio.',
+                    'does_not_exist': 'El país seleccionado no existe.',
+                    'null': 'Debe seleccionar un país.'
+                }
+            },
+            'document_type_id': {
+                'error_messages': {
+                    'required': 'El tipo de documento es obligatorio.',
+                    'does_not_exist': 'El tipo de documento seleccionado no existe.',
+                    'null': 'Debe seleccionar un tipo de documento.'
+                }
+            }
+        }
 
     # ✅ VALIDACIONES PERSONALIZADAS ABAJO
 
