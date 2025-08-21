@@ -97,6 +97,23 @@ class PatientService:
 
         if existing:
             return existing, False, False
+        
+        # Validar que la provincia pertenezca a la región seleccionada
+        region_id = data.get("region").id if isinstance(data.get("region"), object) else data.get("region")
+        province_id = data.get("province").id if isinstance(data.get("province"), object) else data.get("province")
+        district_id = data.get("district").id if isinstance(data.get("district"), object) else data.get("district")
+        
+        from Reflexo.models import Province, District
+        
+        # Verificar que la provincia pertenece a la región
+        province = Province.objects.filter(id=province_id).first()
+        if not province or province.region_id != region_id:
+            raise ValueError("La provincia seleccionada no pertenece a la región indicada")
+        
+        # Verificar que el distrito pertenece a la provincia
+        district = District.objects.filter(id=district_id).first()
+        if not district or district.province_id != province_id:
+            raise ValueError("El distrito seleccionado no pertenece a la provincia indicada")
 
         # Creación directa con los campos disponibles;
         # se asume que data ya viene validado por el serializer en la vista
@@ -105,6 +122,30 @@ class PatientService:
 
     @transaction.atomic
     def update(self, patient: Patient, data: Dict[str, Any]) -> Patient:
+        # Validar relaciones geográficas si se están actualizando
+        if 'region' in data or 'province' in data or 'district' in data:
+            # Obtener los valores actuales o los nuevos si se están actualizando
+            region_id = data.get('region', patient.region_id)
+            region_id = region_id.id if isinstance(region_id, object) else region_id
+            
+            province_id = data.get('province', patient.province_id)
+            province_id = province_id.id if isinstance(province_id, object) else province_id
+            
+            district_id = data.get('district', patient.district_id)
+            district_id = district_id.id if isinstance(district_id, object) else district_id
+            
+            from Reflexo.models import Province, District
+            
+            # Verificar que la provincia pertenece a la región
+            province = Province.objects.filter(id=province_id).first()
+            if not province or province.region_id != region_id:
+                raise ValueError("La provincia seleccionada no pertenece a la región indicada")
+            
+            # Verificar que el distrito pertenece a la provincia
+            district = District.objects.filter(id=district_id).first()
+            if not district or district.province_id != province_id:
+                raise ValueError("El distrito seleccionado no pertenece a la provincia indicada")
+        
         changed_fields = []
         for field, value in data.items():
             if not hasattr(patient, field):

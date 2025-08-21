@@ -30,12 +30,15 @@ class PatientListCreateView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        patient, created, restored = patient_service.store_or_restore(serializer.validated_data)
-        out = PatientSerializer(patient).data
-        if created:
-            return Response(out, status=status.HTTP_201_CREATED)
-        # Sin soft delete en el modelo actual, tratamos como conflicto si ya existe
-        return Response({"message": "El paciente ya existe", "data": out}, status=status.HTTP_409_CONFLICT)
+        try:
+            patient, created, restored = patient_service.store_or_restore(serializer.validated_data)
+            out = PatientSerializer(patient).data
+            if created:
+                return Response(out, status=status.HTTP_201_CREATED)
+            # Sin soft delete en el modelo actual, tratamos como conflicto si ya existe
+            return Response({"message": "El paciente ya existe", "data": out}, status=status.HTTP_409_CONFLICT)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class PatientRetrieveUpdateDeleteView(APIView):
     def get(self, request, pk):
@@ -54,8 +57,11 @@ class PatientRetrieveUpdateDeleteView(APIView):
         serializer = PatientSerializer(patient, data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        updated = patient_service.update(patient, serializer.validated_data)
-        return Response(PatientSerializer(updated).data)
+        try:
+            updated = patient_service.update(patient, serializer.validated_data)
+            return Response(PatientSerializer(updated).data)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         try:

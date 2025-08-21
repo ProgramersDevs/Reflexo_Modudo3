@@ -16,8 +16,8 @@ class Patient(models.Model):
     ])
     
     # Información de contacto
-    primary_phone = models.CharField(max_length=20)
-    secondary_phone = models.CharField(max_length=20, blank=True, null=True)
+    primary_phone = models.CharField(max_length=15)
+    secondary_phone = models.CharField(max_length=15, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     
     # Información adicional
