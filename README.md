@@ -4,38 +4,36 @@ Esta aplicación maneja la gestión de pacientes, diagnósticos e historiales m�
 
 ## Estructura de la Aplicación
 
-'''......
 patients_diagnoses/
 ├── __init__.py
 ├── apps.py
 ├── models/
 │   ├── __init__.py
-│   ├── patient.py         # Modelo de paciente
-│   ├── diagnosis.py       # Modelo de diagnóstico
-│   └── medical_record.py  # Historial médico
+│   ├── patient.py             # Modelo de paciente
+│   ├── diagnosis.py           # Modelo de diagnóstico
+│   └── medical_record.py      # Historial médico
 ├── serializers/
 │   ├── __init__.py
-│   ├── patient.py         # Serializers de paciente
-│   ├── diagnosis.py       # Serializers de diagnóstico
-│   └── medical_record.py  # Serializers de historial médico
+│   ├── patient.py             # Serializers de paciente
+│   ├── diagnosis.py           # Serializers de diagnóstico
+│   └── medical_record.py      # Serializers de historial médico
 ├── views/
 │   ├── __init__.py
-│   ├── patient.py         # Vistas de paciente
-│   ├── diagnosis.py       # Vistas de diagnóstico
-│   └── medical_record.py  # Vistas de historial médico
+│   ├── patient.py             # Vistas de paciente
+│   ├── diagnosis.py           # Vistas de diagnóstico
+│   └── medical_record.py      # Vistas de historial médico
 ├── services/
 │   ├── __init__.py
-│   ├── patient_service.py # Servicios de paciente
-│   ├── diagnosis_service.py # Servicios de diagnóstico
+│   ├── patient_service.py     # Servicios de paciente
+│   ├── diagnosis_service.py   # Servicios de diagnóstico
 │   └── medical_record_service.py # Servicios de historial médico
-├── urls.py                # URLs del módulo
-├── admin.py               # Admin de Django
-└── tests/                 # Tests del módulo
+├── urls.py                    # URLs del módulo
+├── admin.py                   # Admin de Django
+└── tests/                     # Tests del módulo
     ├── __init__.py
     ├── test_models.py
     ├── test_views.py
     └── test_services.py
-
 
 ## Relaciones con Otras Apps
 
