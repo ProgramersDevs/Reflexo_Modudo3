@@ -1,205 +1,301 @@
-# **Módulo 03 – Gestión de Pacientes y Diagnósticos (Django)**
+# Patients Diagnoses App
 
-## **Objetivo General**
-Gestionar de forma completa los pacientes y sus diagnósticos médicos, incluyendo registro, actualización, búsqueda avanzada y manejo de información médica básica, utilizando Django y Django REST Framework.
+Esta aplicación maneja la gestión de pacientes, diagnósticos e historiales médicos, estableciendo relaciones con las apps Reflexo y mi_app.
 
-## **Meta**
-Implementar arquitectura MVC adaptada a Django + APIs REST para React.
+## Estructura de la Aplicación
 
----
-
-## **Diagnósticos (diagnoses/)**
-
-**Propósito:** Gestión de los diagnósticos médicos disponibles en el sistema.
-
-### **diagnosis.py (modelo)**
-**Atributos principales:**
-- **code:** Código único del diagnóstico.
-- **name:** Nombre del diagnóstico.
-
-**Características adicionales:**
-- Implementa borrado lógico mediante un campo `deleted_at` (equivalente a SoftDeletes en Laravel).
-
-### **diagnosis_view.py (vista/controlador)**
-**Responsabilidades:**
-- Listado de diagnósticos.
-- Registro de nuevos diagnósticos.
-- Eliminación lógica.
-
----
-
-## **Pacientes (patients/)**
-
-**Propósito:** Administración de información personal, médica y de contacto de pacientes.
-
-### **01_Modelo_y_Recursos/**
-
-#### **patient.py (modelo)**
-**Atributos:**
-- **Información personal:** nombres, apellidos.
-- **Contacto:** teléfonos, correo electrónico.
-- **Salud:** condición médica.
-- **Ubicación:** región, provincia, distrito.
-- **Documentación:** tipo y número de documento.
-
-#### **patient_serializer.py**
-- Serializador de pacientes (equivalente a `PatientResource` en Laravel).
-- Transforma los datos de paciente para ser consumidos por la API.
-
-#### **patient_serializer.py (colección personalizada)**
-- Django no necesita una colección como `PatientCollection`, pero se utiliza paginación personalizada con `PageNumberPagination`.
-
----
-
-### **02_Controlador/**
-
-#### **patient_view.py**
-**Responsabilidades:**
-- Registro de nuevos pacientes.
-- Actualización y eliminación.
-- Listado paginado de pacientes.
-- Búsqueda avanzada de pacientes (`/search/`).
-
----
-
-### **03_Servicios/**
-
-#### **patient_service.py**
-**Lógica de negocio:**
-- Obtención de todos los pacientes.
-- Paginación.
-- Búsqueda por múltiples términos.
-- Ordenamiento.
-
----
-
-### **04_Request_Validaciones/**
-**Propósito:** Encapsular reglas de validación de datos (equivalente a Laravel Form Requests).
-
-#### **store_patient_validator.py**
-**Validaciones al registrar un nuevo paciente:**
-- Documento único.
-- Correo electrónico único.
-- Campos requeridos y opcionales.
-
-#### **update_patient_validator.py**
-**Validaciones para actualizar un paciente:**
-- Reglas similares al registro, pero sin conflictos con el paciente actual.
-
-#### **search_patients_validator.py**
-**Validaciones para búsqueda avanzada:**
-- Revisión de términos de búsqueda y filtros.
-
----
-
-## **Model (Modelo)**
-- **Patient Model:** Modelo de paciente con información personal y médica (`patient.py`).
-- **Diagnosis Model:** Sistema de diagnósticos médicos (`diagnosis.py`).
-- **PatientResource:** Transformación de datos para API (`patient_serializer.py`).
-- **PatientCollection:** Colección personalizada de pacientes (`pagination.py`).
-
----
-
-## **View (Vista/API)**
-- **Patient Controllers:** Registro, actualización, búsqueda de pacientes (`patient_view.py`).
-- **Diagnosis Controllers:** Gestión de diagnósticos médicos (`diagnosis_view.py`).
-- **API Routes:** Configuración de rutas para pacientes y diagnósticos (`urls/api_urls.py`).
-- **Search Implementation:** Búsqueda avanzada de pacientes (`patient_view.py` + `patient_service.py`).
-
----
-
-## **Controller (Lógica de Negocio)**
-- **Patient Services:** Lógica de gestión de pacientes (`patient_service.py`).
-- **Diagnosis Services:** Lógica de gestión de diagnósticos (opcional).
-- **Search Services:** Servicios de búsqueda y filtrado (`patient_service.py`).
-- **Validation Services:** Validación de datos de pacientes (`validators/`).
-
----
-
-Estructura de carpetas propuesta
-
-core/
-├── models/                              
-│   ├── patient.py                      
-│   └── diagnosis.py                     
-├── serializers/                         
-│   ├── patient_serializer.py            
-│   └── diagnosis_serializer.py          
-├── views/                               
-│   ├── patient_view.py                  
-│   └── diagnosis_view.py                
-├── services/                           
-│   └── patient_service.py               
-├── validators/                          
-│   ├── search_patients_validator.py     
-│   ├── store_patient_validator.py       
-│   └── update_patient_validator.py      
-├── pagination/                          
-│   └── custom_pagination.py             
-├── urls/                                
-│   └── api_urls.py                     
+'''......
+patients_diagnoses/
+├── __init__.py
+├── apps.py
+├── models/
+│   ├── __init__.py
+│   ├── patient.py         # Modelo de paciente
+│   ├── diagnosis.py       # Modelo de diagnóstico
+│   └── medical_record.py  # Historial médico
+├── serializers/
+│   ├── __init__.py
+│   ├── patient.py         # Serializers de paciente
+│   ├── diagnosis.py       # Serializers de diagnóstico
+│   └── medical_record.py  # Serializers de historial médico
+├── views/
+│   ├── __init__.py
+│   ├── patient.py         # Vistas de paciente
+│   ├── diagnosis.py       # Vistas de diagnóstico
+│   └── medical_record.py  # Vistas de historial médico
+├── services/
+│   ├── __init__.py
+│   ├── patient_service.py # Servicios de paciente
+│   ├── diagnosis_service.py # Servicios de diagnóstico
+│   └── medical_record_service.py # Servicios de historial médico
+├── urls.py                # URLs del módulo
+├── admin.py               # Admin de Django
+└── tests/                 # Tests del módulo
+    ├── __init__.py
+    ├── test_models.py
+    ├── test_views.py
+    └── test_services.py
 
 
----
+## Relaciones con Otras Apps
 
-## **APIs a Desarrollar para React**
+### App Reflexo
+La app patients_diagnoses utiliza los modelos de ubicación geográfica de Reflexo:
 
-### **Pacientes**
-- **GET** `/api/patients/` → Obtener lista de pacientes (paginada).
-- **POST** `/api/patients/` → Registrar nuevo paciente.
-- **PUT** `/api/patients/{id}/` → Actualizar información de paciente.
-- **DELETE** `/api/patients/{id}/` → Eliminar paciente.
-- **GET** `/api/patients/search/` → Búsqueda avanzada con filtros.
+- *Country*: País del paciente
+- *Region*: Región del paciente  
+- *Province*: Provincia del paciente
+- *District*: Distrito del paciente
 
-### **Diagnósticos**
-- **GET** `/api/diagnoses/` → Listar todos los diagnósticos.
-- **POST** `/api/diagnoses/` → Registrar nuevo diagnóstico.
-- **PUT** `/api/diagnoses/{id}/` → Actualizar información de diagnostico.
-- **DELETE** `/api/diagnoses/{id}/` → Eliminar diagnostico.
-- **GET** `/api/diagnoses/search/` → Búsqueda avanzada con filtros.
+### App mi_app
+La app patients_diagnoses utiliza el modelo de tipo de documento de mi_app:
 
----
+- *DocumentType*: Tipo de documento de identidad del paciente
 
-## **Tareas Específicas**
-- Gestión de Pacientes: CRUD completo con validaciones y recursos personalizados.
-- Sistema de Diagnósticos: Catálogo de diagnósticos con gestión básica.
-- Búsqueda Avanzada: Filtros por nombres, apellidos, documento, condición médica, etc.
-- Validaciones: Reglas estrictas de unicidad y campos obligatorios.
-- Documentación de APIs: Swagger o DRF-YASG.
-- Testing: Pruebas unitarias para modelos, vistas y servicios.
+## Modelos
 
----
+### Patient
+Modelo principal que representa a un paciente con:
+- Información personal (nombre, apellidos, fecha de nacimiento, sexo)
+- Información de contacto (teléfonos, email, dirección)
+- Información adicional (ocupación, condición de salud)
+- Relaciones con ubicación geográfica (Reflexo)
+- Relación con tipo de documento (mi_app)
+- Campos de auditoría (created_at, updated_at, deleted_at)
 
-## **Dependencias Clave**
-- Django ORM.
-- Django REST Framework.
-- DRF Pagination.
-- Custom Services.
-- Validators/Serializers.
-- Soft Deletes (manual).
+### Diagnosis
+Modelo que representa diagnósticos médicos con:
+- Código único del diagnóstico
+- Nombre y descripción
+- Campos de auditoría
+- Soft delete implementado
 
----
-## **Instalacion y Uso
-Sigue estos pasos para levantar el proyecto en tu entorno local.
+### MedicalRecord
+Modelo que relaciona pacientes con diagnósticos:
+- Relación con Patient y Diagnosis
+- Fecha del diagnóstico
+- Síntomas, tratamiento y notas
+- Estado del diagnóstico (activo, resuelto, crónico, en monitoreo)
+- Campos de auditoría
+## 📑 Documentación de Endpoints
+# Documentación de Endpoints - Aplicación de Pacientes y Diagnósticos
+A continuación se presenta la documentación completa de todos los endpoints disponibles en la aplicación de pacientes y diagnósticos.
 
-### 1️⃣ Clonar el repositorio
-git clone "Colocar el link del repositorio"
+## Endpoints de Pacientes
+### Listar Pacientes
+- URL : /patients/
+- Método : GET
+- Descripción : Obtiene una lista paginada de todos los pacientes activos.
+- Parámetros de consulta :
+  - page : Número de página (por defecto: 1)
+  - per_page : Cantidad de registros por página (por defecto: 10)
+- Respuesta exitosa :
+  
+  {
+    "count": 100,
+    "num_pages": 10,
+    "current_page": 1,
+    "results": [...]
+  }
+  
+### Buscar Pacientes
+- URL : /patients/search/
+- Método : GET
+- Descripción : Busca pacientes según criterios específicos.
+- Parámetros de consulta : Varios criterios de búsqueda como nombre, documento, etc.
+- Respuesta exitosa : Similar a listar pacientes, pero filtrado según criterios.
+### Ver Detalle de Paciente
+- URL : /patients/{id}/
+- Método : GET
+- Descripción : Obtiene información detallada de un paciente específico.
+- Respuesta exitosa : Datos completos del paciente.
+### Crear Paciente
+- URL : /patients/
+- Método : POST
+- Descripción : Crea un nuevo registro de paciente.
+- Cuerpo de la solicitud : Datos del paciente a crear.
+- Respuesta exitosa : Datos del paciente creado con código 201.
+### Actualizar Paciente
+- URL : /patients/{id}/
+- Método : PUT
+- Descripción : Actualiza los datos de un paciente existente.
+- Cuerpo de la solicitud : Datos actualizados del paciente.
+- Respuesta exitosa : Datos actualizados del paciente.
+### Eliminar Paciente
+- URL : /patients/{id}/
+- Método : DELETE
+- Descripción : Elimina (soft delete) un paciente existente.
+- Respuesta exitosa : Código 204 sin contenido.
+## Endpoints de Diagnósticos
+### Listar Diagnósticos
+- URL : /diagnoses/
+- Método : GET
+- Descripción : Obtiene una lista paginada de todos los diagnósticos.
+- Parámetros de consulta :
+  - page : Número de página (por defecto: 1)
+  - page_size : Cantidad de registros por página (por defecto: 10)
+  - search : Término de búsqueda general
+- Respuesta exitosa :
+  
+  {
+    "count": 100,
+    "num_pages": 10,
+    "current_page": 1,
+    "results": [...]
+  }
+  
+### Buscar Diagnósticos
+- URL : /diagnoses/search/
+- Método : GET
+- Descripción : Busca diagnósticos por nombre o código.
+- Parámetros de consulta :
+  - q : Término de búsqueda
+- Respuesta exitosa : Lista de diagnósticos que coinciden con el criterio.
+### Ver Detalle de Diagnóstico
+- URL : /diagnoses/{id}/
+- Método : GET
+- Descripción : Obtiene información detallada de un diagnóstico específico.
+- Respuesta exitosa : Datos completos del diagnóstico.
+### Crear Diagnóstico
+- URL : /diagnoses/
+- Método : POST
+- Descripción : Crea un nuevo registro de diagnóstico.
+- Cuerpo de la solicitud : Datos del diagnóstico a crear.
+- Respuesta exitosa : Datos del diagnóstico creado con código 201.
+### Actualizar Diagnóstico
+- URL : /diagnoses/{id}/
+- Método : PUT
+- Descripción : Actualiza los datos de un diagnóstico existente.
+- Cuerpo de la solicitud : Datos actualizados del diagnóstico.
+- Respuesta exitosa : Datos actualizados del diagnóstico.
+### Eliminar Diagnóstico
+- URL : /diagnoses/{id}/
+- Método : DELETE
+- Descripción : Elimina (soft delete) un diagnóstico existente.
+- Respuesta exitosa : Código 204 sin contenido.
+## Endpoints de Historiales Médicos
+### Listar Historiales Médicos
+- URL : /medical-records/
+- Método : GET
+- Descripción : Obtiene una lista paginada de todos los historiales médicos.
+- Parámetros de consulta :
+  - page : Número de página (por defecto: 1)
+  - page_size : Cantidad de registros por página (por defecto: 10)
+  - search : Término de búsqueda general
+  - patient_id : Filtrar por ID de paciente
+  - diagnosis_id : Filtrar por ID de diagnóstico
+  - status : Filtrar por estado
+  - date_from : Filtrar desde fecha
+  - date_to : Filtrar hasta fecha
+- Respuesta exitosa :
+  
+  {
+    "count": 100,
+    "num_pages": 10,
+    "current_page": 1,
+    "results": [...]
+  }
+  
+### Ver Detalle de Historial Médico
+- URL : /medical-records/{id}/
+- Método : GET
+- Descripción : Obtiene información detallada de un historial médico específico.
+- Respuesta exitosa : Datos completos del historial médico.
+### Crear Historial Médico
+- URL : /medical-records/
+- Método : POST
+- Descripción : Crea un nuevo registro de historial médico.
+- Cuerpo de la solicitud : Datos del historial médico a crear.
+- Respuesta exitosa : Datos del historial médico creado con código 201.
+### Actualizar Historial Médico
+- URL : /medical-records/{id}/
+- Método : PUT
+- Descripción : Actualiza los datos de un historial médico existente.
+- Cuerpo de la solicitud : Datos actualizados del historial médico.
+- Respuesta exitosa : Datos actualizados del historial médico.
+### Eliminar Historial Médico
+- URL : /medical-records/{id}/
+- Método : DELETE
+- Descripción : Elimina (soft delete) un historial médico existente.
+- Respuesta exitosa : Código 204 sin contenido.
+### Historial Médico de un Paciente
+- URL : /patients/{patient_id}/medical-history/
+- Método : GET
+- Descripción : Obtiene todo el historial médico de un paciente específico.
+- Parámetros de consulta :
+  - page : Número de página (por defecto: 1)
+  - page_size : Cantidad de registros por página (por defecto: 10)
+- Respuesta exitosa :
+  
+  {
+    "count": 100,
+    "num_pages": 10,
+    "current_page": 1,
+    "results": [...]
+  }
+  
+### Estadísticas de Diagnósticos
+- URL : /diagnosis-statistics/
+- Método : GET
+- Descripción : Obtiene estadísticas generales sobre los diagnósticos registrados.
+- Respuesta exitosa : Datos estadísticos sobre diagnósticos.
+## Notas Adicionales
+- Todos los endpoints que devuelven listas soportan paginación.
+- La mayoría de los endpoints implementan soft delete para mantener la integridad referencial.
+- Los endpoints de búsqueda permiten filtrar por diferentes criterios según el tipo de entidad.
+- Todos los endpoints requieren autenticación y tienen permisos específicos configurados.
 
-cd tu-proyecto
-## **Crear entorno Virtual
-python -m venv venv
-venv\Scripts\activate
-## **Instalar Dependencias necesarias
-pip install -r requirements.txt
+## API Endpoints
 
-## **Levantar Servidor
-python manage.py runserver
+### Pacientes
+- GET /api/patients/ - Lista pacientes
+- POST /api/patients/ - Crea paciente
+- GET /api/patients/<id>/ - Obtiene paciente
+- PUT /api/patients/<id>/ - Actualiza paciente
+- DELETE /api/patients/<id>/ - Elimina paciente
+- GET /api/patients/search/ - Busca pacientes
 
-## **Entregables Esperados**
-- CRUD completo de pacientes funcional y documentado.
-- Sistema de diagnóstico médico implementado.
-- Búsqueda avanzada por múltiples criterios.
-- Validaciones robustas integradas.
+### Diagnósticos
+- GET /api/diagnoses/ - Lista diagnósticos
+- POST /api/diagnoses/ - Crea diagnóstico
+- GET /api/diagnoses/<id>/ - Obtiene diagnóstico
+- PUT /api/diagnoses/<id>/ - Actualiza diagnóstico
+- DELETE /api/diagnoses/<id>/ - Elimina diagnóstico
+- GET /api/diagnoses/search/ - Busca diagnósticos
 
-- Rutas y APIs bien documentadas.
-- Tests unitarios e integración.
+### Historiales Médicos
+- GET /api/medical-records/ - Lista historiales
+- POST /api/medical-records/ - Crea historial
+- GET /api/medical-records/<id>/ - Obtiene historial
+- PUT /api/medical-records/<id>/ - Actualiza historial
+- DELETE /api/medical-records/<id>/ - Elimina historial
+- GET /api/patients/<id>/medical-history/ - Historial de paciente
+- GET /api/diagnosis-statistics/ - Estadísticas
+
+## Características
+
+- *Soft Delete*: Todos los modelos implementan eliminación lógica
+- *Paginación*: Endpoints de lista incluyen paginación
+- *Búsqueda*: Funcionalidad de búsqueda en todos los modelos
+- *Filtros*: Filtros por diferentes criterios
+- *Validaciones*: Validaciones personalizadas en serializers
+- *Relaciones*: Relaciones bien definidas entre modelos
+- *Auditoría*: Campos de auditoría automáticos
+
+## Configuración
+
+Para que la app funcione correctamente, asegúrate de que:
+
+1. Las apps Reflexo y mi_app estén en INSTALLED_APPS
+2. Las migraciones se hayan ejecutado
+3. Los modelos de las otras apps tengan datos de ejemplo
+
+## Uso
+
+La app está diseñada para ser utilizada como un módulo completo de gestión médica, permitiendo:
+
+- Registrar y gestionar pacientes
+- Mantener un catálogo de diagnósticos
+- Crear historiales médicos que relacionen pacientes con diagnósticos
+- Consultar estadísticas y reportes
+- Realizar búsquedas avanzadas.
