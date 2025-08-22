@@ -4,6 +4,7 @@ Esta aplicación maneja la gestión de pacientes, diagnósticos e historiales m�
 
 ## Estructura de la Aplicación
 
+```bash
 patients_diagnoses/
 ├── __init__.py
 ├── apps.py
